@@ -182,7 +182,7 @@ uv run ruff check .
 uv build
 ```
 
-Architecture, cascade internals and the failure that produced each rule: [`docs/architecture.md`](docs/architecture.md). Exit codes: [`docs/exit-codes.md`](docs/exit-codes.md).
+Architecture, cascade internals and the failure that produced each rule: [`docs/architecture.md`](docs/architecture.md). Exit codes: [`docs/exit-codes.md`](docs/exit-codes.md). Why the tool is shaped this way, with the public evidence: [`docs/positioning.md`](docs/positioning.md).
 
 ## License
 
