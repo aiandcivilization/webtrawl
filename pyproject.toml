@@ -9,7 +9,7 @@ description = "Agent-native web search and page extraction CLI: multi-provider d
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.15"
 authors = [{ name = "Yanis Labeyrie" }]
 keywords = [
     "ai-agents",
