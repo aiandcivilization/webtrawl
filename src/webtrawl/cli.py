@@ -757,6 +757,9 @@ def config_check():
         {"provider": "jina", "configured": "yes", "source": "keyless"},
         {"provider": "gnews", "configured": "yes", "source": "keyless"},
     ]
+    for kind, label in (("gemini", "gemini (ocr)"), ("openai", "vlm (ocr)"), ("mistral", "mistral (ocr)")):
+        okey, osource = ocr_engine.key_status(kind)
+        rows.append({"provider": label, "configured": "yes" if okey else "no", "source": osource})
     print(render_data_as_toon(["provider", "configured", "source"], rows))
 
 

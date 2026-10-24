@@ -98,6 +98,16 @@ async def ocr_file_async(
     )
 
 
+def key_status(kind: str) -> tuple[str | None, str]:
+    """Return ``(key_or_None, source)`` for a provider kind, never the key itself.
+
+    ``kind`` is one of ``gemini``, ``openai`` (any OpenAI-compatible host) or
+    ``mistral``. Used by ``config check`` so a caller can see that an OCR
+    credential resolves without printing it.
+    """
+    return engine.resolve_key(kind)
+
+
 def available_providers() -> list[dict[str, Any]]:
     """Describe the registry for the `providers` command, key source included."""
     rows: list[dict[str, Any]] = []
