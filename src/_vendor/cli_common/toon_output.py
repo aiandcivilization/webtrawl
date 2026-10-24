@@ -1,9 +1,8 @@
-"""Shared TOON (Token-Oriented Object Notation) tabular encoder for god-tier CLI tools.
+"""TOON (Token-Oriented Object Notation) tabular encoder.
 
-Single source of truth for the hand-rolled ``columns[N]: / rows[N,]{cols}:``
-emitter previously copy-pasted in transcribe_tool and world_model_tool (and
-re-implemented with drifting escaping rules in twitter/jobspy/yahoo tools).
-Use this module instead of re-implementing per tool.
+Emits the ``columns[N]: / rows[N,]{cols}:`` block that every webtrawl command
+prints. One implementation, one escaping rule; nothing in this project may
+re-implement it.
 """
 
 from __future__ import annotations

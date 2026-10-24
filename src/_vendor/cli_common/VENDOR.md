@@ -8,7 +8,7 @@ project.
 - Copied modules: `toon_output` (TOON encoder), `ocr` (OCR engine) and
   `ocr_models.toml` (model registry)
 - Not copied: the argparse helpers, `toon_help`, `tool_descriptions` and the rest
-  of the fleet registry — a public tool does not need to publish its siblings.
+  of the internal registry — a public tool does not need to publish its siblings.
 
 ## Local edits applied to the verbatim copy
 
