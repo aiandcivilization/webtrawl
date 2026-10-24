@@ -95,6 +95,36 @@ Each attempt is timed and reported (`tiers[]`), so the agent knows which transpo
 
 **7. Semantic exit codes.** `0` ok · `1` transient (retry) · `2` auth missing · `3` bad input · `4` rate limited. An agent can branch on the code instead of parsing stderr. `webtrawl agent-info` prints the whole contract as TOON, so a harness can discover the tool at runtime.
 
+## Site security: what it gets past, and what it does not
+
+Most blocking is not one wall but a ladder of them. `webtrawl` climbs one rung at
+a time and **stops at the first rung that works**, so a page that needs nothing
+costs one plain request.
+
+| Class of protection | How the site blocks | What `webtrawl` does | Where it stops |
+|---|---|---|---|
+| Static page | nothing | direct TLS fetch | — |
+| TLS / JA3–JA4 fingerprint rule | Cloudflare and neighbours reject `curl` and Python clients at the handshake | `curl_cffi` impersonation, rotated `chrome → tor145 → chrome116` (0.9–3.4 s measured) | a rule keyed on **IP reputation** is not a handshake problem; engine tuning cannot fix it |
+| JavaScript / managed challenge | the page renders only after a script runs | patched Chromium (patchright) executes the JS, and the challenge solver runs where the challenge is solvable | an interactive challenge on a datacenter IP frequently fails; the archive tier then takes over |
+| Consent wall | tarteaucitron, Didomi, OneTrust, Axeptio, Cookiebot, Usercentrics overlay the article | vendor-scoped dismissal: reject, then accept, then remove the container after 50 ms | it never clicks a generic button — that mistake navigated a page to the wrong record and is kept as a regression |
+| Paywall / login wall | subscriber-only or authenticated content | **classified** as `paywall` or `login wall` and reported as such; the Internet Archive snapshot is tried because it often predates the wall | content behind a login is never forged, guessed or replayed |
+| Bot-check page | “Just a moment…”, “Vercel Security Checkpoint”, hCaptcha prose | detected by signature, rejected as a wall, archive fallback attempted | a reputation block at the IP level is not solved by any client-side trick |
+| Client-rendered shell | HTTP 200 with an app shell and no content | escalation triggered when a 200 page declares no structured data and no prose | sites that need credentials to render stay out of reach |
+
+Two rules make the climbing “intelligent” rather than brute:
+
+- **Escalate only on proof of failure** — a challenge marker, a wall signature,
+  or the density floor (text share of the raw HTML bytes, disabled for the
+  browser tier because it has already run the JavaScript).
+- **Keep the load bounded** — one semaphore covers a whole command (8 shared
+  connections beat 18 parallel ones on the measured CDN), a lost tier is retried
+  once, and one browser session serves a whole batch.
+
+Scope: it reads pages that are public to a browser. It does not log in, does not
+buy, and does not solve a challenge with a paid human or a proxy farm. Respect a
+site's terms and `robots.txt`; the tool reports what it got, so a caller can tell
+a full page from a `partial` one.
+
 ## Commands
 
 | Command | What it does |
