@@ -1,0 +1,72 @@
+# OCR model registry: the part that changes, kept out of the code.
+#
+# A profile is an ordered fallback chain. Inside a profile, the first provider is
+# started alone; if it has not answered after `hedge_after` seconds, the next one
+# starts IN PARALLEL and the first correct answer wins. That is what keeps a slow
+# or degraded provider from adding its latency to every call.
+#
+# Any entry can be overridden from ~/.config/webtrawl/ocr.toml without
+# touching this file, and a provider can be added here for every tool at once.
+
+[defaults]
+profile = "fast"
+lang = "fra"
+deadline_seconds = 25
+cache_ttl_days = 90
+
+[profiles]
+fast = ["gemini-flash-lite", "gemini-flash", "vlm-free", "tesseract"]
+free = ["vlm-free", "tesseract"]
+deep = ["gemini-flash", "vlm-free", "mistral-ocr"]
+print = ["tesseract"]
+
+[providers.gemini-flash-lite]
+kind = "gemini"
+model = "gemini-3.5-flash-lite"
+thinking = "MINIMAL"
+hedge_after = 1.5
+timeout = 30
+cost = "free tier, RPD-bound; ~1150 image tokens per page"
+quality = "reads 18th-century cursive (measured)"
+note = "0.9-6 s measured; the default"
+
+[providers.gemini-flash]
+kind = "gemini"
+model = "gemini-3.5-flash"
+thinking = "HIGH"
+hedge_after = 5.0
+timeout = 90
+cost = "free tier, RPD-bound"
+quality = "best read on a page the fast profile half-reads"
+note = "6-11 s measured: opt-in only"
+
+[providers.vlm-free]
+kind = "openai"
+model = "dots-studio/dots-3-note-preview:free"
+base_url = "https://openrouter.ai/api/v1"
+hedge_after = 3.0
+timeout = 90
+cost = "$0 (measured: cost: 0 on every call)"
+quality = "correct on cursive, slower than gemini"
+note = "any OpenAI-compatible host: Zhipu glm-4v-flash, DashScope, SiliconFlow"
+
+[providers.tesseract]
+kind = "tesseract"
+# A floor provider never races a vision model: on handwriting it returns line
+# noise that is non-empty, so it would win the hedge and poison the answer.
+floor = true
+model = "local"
+hedge_after = 0.0
+timeout = 60
+cost = "$0, offline"
+quality = "printed text only: line noise on cursive (measured)"
+note = "the floor, never a silent fallback for a failed vision model"
+
+[providers.mistral-ocr]
+kind = "mistral"
+model = "mistral-ocr-latest"
+hedge_after = 5.0
+timeout = 90
+cost = "$4/1000 pages ($0.004 per act)"
+quality = "document specialist; bounding boxes and per-word confidence available"
+note = "no documented API free tier: opt-in only"
