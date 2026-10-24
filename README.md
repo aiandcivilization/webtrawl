@@ -10,6 +10,8 @@ One page costs <b>43,657 tokens</b> instead of <b>291,846</b> — and a paywall 
 <a href="https://docs.astral.sh/uv/"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json" alt="uv"></a>
 </p>
 
+<p align="center"><img src="docs/demo.gif" width="900" alt="webtrawl: a keyless news search, then a paginated extraction"></p>
+
 ---
 
 ## The problem
